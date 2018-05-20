@@ -6,22 +6,22 @@
 
 import Foundation
 
-class InstallCommand : Command {
-    var name = "install"
+public struct InstallCommand : Command {
+    public let name = "install"
     
-    var description = "Installs the command line tool into /usr/local/bin (can be overridden)."
+    public let description = "Installs the command line tool into /usr/local/bin (can be overridden)."
     
-    var subCommands: [Command] = []
+    public let subCommands: [Command] = []
     
-    var options: [Option] = [
+    public let options: [Option] = [
         StandardOption("location", description: "Override the default install location of /usr/local/bin/", parameters: [
                 StandardParameter("directory", Specification.string(Required.one))
             ])
     ]
     
-    var parameters: [Parameter] = []
+    public let parameters: [Parameter] = []
     
-    func perform(options: [String : ValidatedParameters], parameters: ValidatedParameters) -> ExitCode {
+    public func perform(options: [String : ValidatedParameters], parameters: ValidatedParameters) -> ExitCode {
         
         let installLocation : String
         
@@ -39,7 +39,7 @@ class InstallCommand : Command {
     }
     
     /// Taken from [StackOverflow](https://stackoverflow.com/questions/26971240/how-do-i-run-an-terminal-command-in-a-swift-script-e-g-xcodebuild)
-    func shell(launchPath: String, arguments: [String]) -> String
+    private func shell(launchPath: String, arguments: [String]) -> String
     {
         let task = Process()
         task.launchPath = launchPath
@@ -60,7 +60,7 @@ class InstallCommand : Command {
     }
     
     /// Taken from [StackOverflow](https://stackoverflow.com/questions/26971240/how-do-i-run-an-terminal-command-in-a-swift-script-e-g-xcodebuild)
-    func bash(command: String, arguments: [String]) -> String {
+    private func bash(command: String, arguments: [String]) -> String {
         let whichPathForCommand = shell(launchPath: "/bin/bash", arguments: [ "-l", "-c", "which \(command)" ])
         return shell(launchPath: whichPathForCommand, arguments: arguments)
     }
