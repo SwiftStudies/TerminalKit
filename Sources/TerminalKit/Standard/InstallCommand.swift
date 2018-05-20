@@ -21,6 +21,10 @@ public struct InstallCommand : Command {
     
     public let parameters: [Parameter] = []
     
+    public init(){
+        
+    }
+    
     public func perform(options: [String : ValidatedParameters], parameters: ValidatedParameters) -> ExitCode {
         
         let installLocation : String
