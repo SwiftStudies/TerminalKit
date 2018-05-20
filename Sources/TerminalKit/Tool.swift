@@ -36,7 +36,7 @@ public struct Tool {
         self.commands = commands
     }
     
-    public func run(_ arguments:[String] = CommandLine.arguments) throws {
+    public func run(_ arguments:[String]) throws {
         var arguments = arguments
         
         if !arguments.isEmpty {
