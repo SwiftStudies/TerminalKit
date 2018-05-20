@@ -10,7 +10,7 @@ public protocol Parameter {
     var  name          : String {get}
     var  specification : Specification {get}
     
-    func process(validated arguments:[String])
+    mutating func process(validated arguments:[String])
 }
 
 extension Array where Element == Parameter {
