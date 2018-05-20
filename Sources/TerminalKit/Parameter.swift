@@ -19,8 +19,15 @@ extension Array where Element == Parameter {
     }
 }
 
-public enum ParameterError : Error {
+public enum ParameterError : Error, CustomStringConvertible {
     case notEnough(of:String, expected:Specification)
+    
+    public var description: String{
+        switch self {
+        case .notEnough(let parameterName, let specification):
+            return "Expected \(specification.description) \(parameterName)"
+        }
+    }
 }
 
 extension Parameter {
@@ -47,7 +54,7 @@ extension Parameter {
     }
 }
 
-public enum Required {
+public enum Required : CustomStringConvertible  {
     case one, oneOrMore, exactly(Int), between(Int, and: Int), upTo(Int), atLeast(Int)
     
     var min : Int {
@@ -69,15 +76,43 @@ public enum Required {
             return number
         }
     }
+    
+    public var description: String{
+        switch self {
+        case .one:
+            return "a"
+        case .oneOrMore:
+            return "at least"
+        case .exactly(let count):
+            return "exactly \(count)"
+        case .between(let from,let to):
+            return "between \(from) and \(to)"
+        case .upTo(let limit):
+            return "up to \(limit)"
+        case .atLeast(let lowerLimit):
+            return "more than \(lowerLimit)"
+        }
+    }
 }
 
-public enum Specification {
+public enum Specification : CustomStringConvertible {
     case int(Required?), real(Required?), string(Required?)
     
     var  required : Required? {
         switch self {
         case .int(let r), .real(let r), .string(let r):
             return r
+        }
+    }
+    
+    public var typeName : String {
+        switch self {
+        case .int:
+            return "integer"
+        case .real:
+            return "real"
+        case .string:
+            return "string"
         }
     }
     
@@ -95,5 +130,12 @@ public enum Specification {
         default:
             return false
         }
+    }
+    
+    public var description: String{
+        guard let required = required else {
+            return ""
+        }
+        return "\(required) \(typeName)"
     }
 }
