@@ -18,7 +18,7 @@ public struct BlockCommand : Command {
     
     fileprivate var _block : (_ options: [String : ValidatedParameters], _ parameters: ValidatedParameters)->ExitCode
     
-    init(name:String, description: String, subcommands:[Command] = [], options:[Option], parameters:[Parameter] = [], _ block : @escaping (_ options: [String : ValidatedParameters], _ parameters: ValidatedParameters)->ExitCode){
+    public init(name:String, description: String, subcommands:[Command] = [], options:[Option], parameters:[Parameter] = [], _ block : @escaping (_ options: [String : ValidatedParameters], _ parameters: ValidatedParameters)->ExitCode){
         self.name = name
         self.description = description
         self.subCommands = subcommands
