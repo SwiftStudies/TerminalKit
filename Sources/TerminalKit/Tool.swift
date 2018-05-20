@@ -29,6 +29,13 @@ public struct Tool {
     let description : String
     let commands : [Command]
     
+    public init(version:String, description:String, commands:[Command]){
+        assert(commands.count > 0)
+        self.version = version
+        self.description = description
+        self.commands = commands
+    }
+    
     public func run(_ arguments:[String] = CommandLine.arguments) throws {
         var arguments = arguments
         
