@@ -45,6 +45,8 @@ public struct Tool {
         
         message.print("USAGE: \(name)\(commands.count == 1 ? " " : " <sub-command> ")\(commands[0].options.isEmpty ? " " : " [options] ")\(commands[0].parameters.help)")
         message.print()
+        message.print("If not subcommand is specified, the default (\(commands[0])) will be used. Available subcommands are listed below, and the options provided are for the default command. ")
+        message.print()
         message.print()
         
         if !commands.isEmpty {
@@ -69,17 +71,17 @@ public struct Tool {
     public func run(_ arguments:[String]) throws {
         var arguments = arguments
         
-        guard !arguments.contains("--help") else {
-            print(usage)
-            exit(EXIT_SUCCESS)
-        }
-        
         if !arguments.isEmpty {
             for command in commands {
                 if command.name == arguments[0] {
                     try command.execute(arguments: [String](arguments.dropFirst()), commandPath: [name]).exit()
                 }
             }
+        }
+        
+        guard !arguments.contains("--help") else {
+            print(usage)
+            exit(EXIT_SUCCESS)
         }
         
         try commands[0].execute(arguments: arguments, commandPath: [name]).exit()
