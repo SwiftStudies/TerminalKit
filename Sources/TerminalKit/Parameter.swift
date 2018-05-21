@@ -93,6 +93,23 @@ public enum Required : CustomStringConvertible  {
             return "more than \(lowerLimit)"
         }
     }
+    
+    public func usage(withName name:String)->String{
+        switch self {
+        case .one:
+            return name
+        case .oneOrMore:
+            return "\(name) [\(name) ...]"
+        case .exactly(let count):
+            return [String](repeating: name, count: count).joined(separator: " ")
+        case .atLeast(let count):
+            return [String](repeating: name, count: count).joined(separator: " ") + " [\(name) ...]"
+        case .between(let from, let to):
+            return "\(name)-1 ... \(name)-\(from) [... \(name)-\(to)]"
+        case .upTo(let limit):
+            return "\(name)-1 [... \(name)-\(limit)]"
+        }
+    }
 }
 
 public enum Specification : CustomStringConvertible {
@@ -130,6 +147,13 @@ public enum Specification : CustomStringConvertible {
         default:
             return false
         }
+    }
+    
+    public func usage(whenNamed name:String)->String{
+        guard let required = required else {
+            return "[\(name)]"
+        }
+        return required.usage(withName:name)
     }
     
     public var description: String{
