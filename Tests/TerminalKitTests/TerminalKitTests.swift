@@ -2,15 +2,14 @@ import XCTest
 @testable import TerminalKit
 
 final class TerminalKitTests: XCTestCase {
-    func testExample() {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct
-        // results.
-        XCTAssertEqual(TerminalKit().text, "Hello, World!")
+    func testUsage() {
+        let tool = Tool("test", version: "1.0.0", description: "A test tool", commands: [ParameteredCommand()])
+        let usage = tool.commands[0].usage(command: ["test"])
+        print(usage)
     }
 
 
     static var allTests = [
-        ("testExample", testExample),
+        ("testExample", testUsage),
     ]
 }

@@ -15,7 +15,9 @@ public protocol Parameter {
 
 extension Array where Element == Parameter {
     var help : String {
-        return ""
+        return self.map({ (parameter) -> String in
+            parameter.specification.usage(whenNamed: parameter.name)
+        }).joined(separator: " ")
     }
 }
 

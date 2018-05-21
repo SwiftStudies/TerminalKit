@@ -6,6 +6,8 @@
 
 import Foundation
 
+public typealias BlockCommandClosure = (_ options: [String : ValidatedParameters], _ parameters: ValidatedParameters)->ExitCode
+
 public struct BlockCommand : Command {
     public var name: String
     public var description: String
@@ -16,9 +18,9 @@ public struct BlockCommand : Command {
     
     public var parameters: [Parameter]
     
-    fileprivate var _block : (_ options: [String : ValidatedParameters], _ parameters: ValidatedParameters)->ExitCode
+    fileprivate var _block : BlockCommandClosure
     
-    public init(name:String, description: String, subcommands:[Command] = [], options:[Option], parameters:[Parameter] = [], _ block : @escaping (_ options: [String : ValidatedParameters], _ parameters: ValidatedParameters)->ExitCode){
+    public init(name:String, description: String, subcommands:[Command] = [], options:[Option], parameters:[Parameter] = [], _ block : @escaping BlockCommandClosure){
         self.name = name
         self.description = description
         self.subCommands = subcommands
