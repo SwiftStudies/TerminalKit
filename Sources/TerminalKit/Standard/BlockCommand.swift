@@ -27,7 +27,7 @@ public struct BlockCommand : Command {
         _block = block
     }
     
-    public func perform(options: [String : ValidatedParameters], parameters: ValidatedParameters) -> ExitCode {
+    public func perform(options: [String : ValidatedParameters], parameters: ValidatedParameters, commandPath:[String]) -> ExitCode {
         return _block(options, parameters)
     }
     

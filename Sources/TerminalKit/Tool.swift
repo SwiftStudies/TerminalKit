@@ -25,12 +25,14 @@ public enum ExitCode {
 }
 
 public struct Tool {
+    let name : String
     let version : String
     let description : String
     let commands : [Command]
     
-    public init(version:String, description:String, commands:[Command]){
+    public init(_ name:String, version:String, description:String, commands:[Command]){
         assert(commands.count > 0)
+        self.name = name
         self.version = version
         self.description = description
         self.commands = commands
@@ -42,11 +44,16 @@ public struct Tool {
         if !arguments.isEmpty {
             for command in commands {
                 if command.name == arguments[0] {
-                    try command.execute(arguments: [String](arguments.dropFirst())).exit()
+                    try command.execute(arguments: [String](arguments.dropFirst()), commandPath: [name]).exit()
                 }
             }
         }
         
-        try commands[0].execute(arguments: arguments).exit()
+        try commands[0].execute(arguments: arguments, commandPath: [name]).exit()
+    }
+    
+    public func usage(for command:Command? = nil, with path:[String])->String{
+        let command = command ?? commands[0]
+        return command.usage(command: path)
     }
 }

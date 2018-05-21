@@ -15,16 +15,30 @@ public protocol Command {
     var options     : [Option] {get}
     var parameters  : [Parameter] {get}
     
-    func perform(options: [String : ValidatedParameters], parameters: ValidatedParameters) -> ExitCode
+    func perform(options: [String : ValidatedParameters], parameters: ValidatedParameters, commandPath:[String]) -> ExitCode
+}
+
+public enum CommandError : Error, CustomStringConvertible{
+    case invalidParametersForOption(Error, Command, [String], Option)
+    case invalidParametersForCommand(Error, Command, [String])
+    
+    public var description: String{
+        switch self {
+        case .invalidParametersForCommand(let error, let forCommand, _):
+            return "Invalid parameters processing command \(forCommand.name): \(error)"
+        case .invalidParametersForOption(let error, let forCommand, _, let option):
+            return "Invalid parameters processing option of command \(forCommand.name), --\(option.longForm): \(error)"
+        }
+    }
 }
 
 extension Command {
-    var help : String {
+    public func usage(command path:[String]) -> String {
         var message = ""
         message.print(description)
         message.print()
         
-        message.print("Usage: \(name) \(options.isEmpty ? "" : "[options]")  \(parameters.help)")
+        message.print("Usage: \(path.joined(separator: " ")) \(options.isEmpty ? "" : "[options]")  \(parameters.help)")
         message.print()
         
         if !subCommands.isEmpty {
@@ -45,20 +59,24 @@ extension Command {
         return message
     }
     
-    func execute(arguments:[String]) throws -> ExitCode{
+    func execute(arguments:[String],commandPath:[String]) throws -> ExitCode{
+        // Add myself to the command path
+        var commandPath = commandPath
+        commandPath.append(self.name)
+
         //Give any subcommands the chance to operate on the arguments first
         if let candidateSubCommand = arguments.first {
             for command in subCommands {
                 if command.name == candidateSubCommand {
                     let arguments = arguments.dropFirst()
-                    return try command.execute(arguments: Array<String>(arguments.dropFirst()))
+                    return try command.execute(arguments: Array<String>(arguments.dropFirst()), commandPath: commandPath)
                 }
             }
         }
 
         // Display help if it's requested
         if arguments.contains("--help"){
-            print(help)
+            print(usage(command: commandPath))
             ExitCode.success.exit()
         }
         
@@ -70,21 +88,29 @@ extension Command {
         for option in options {
             if let candidateOption = arguments.first {
                 if "--\(option.longForm)" == candidateOption || "-\(option.shortForm ?? "🤬")" == candidateOption {
-                    let results = try option.parse(arguments: [String](arguments.dropFirst()))
-                    arguments = results.remaining
-                    optionValues[option.longForm] = results.parameters
+                    do {
+                        let results = try option.parse(arguments: [String](arguments.dropFirst()))
+                        arguments = results.remaining
+                        optionValues[option.longForm] = results.parameters
+                    } catch {
+                        throw CommandError.invalidParametersForOption(error, self, commandPath, option)
+                    }
                 }
             }
         }
         
         var parameterValues = [String:[String]]()
         for parameter in parameters {
-            let parseResults = try parameter.validate(arguments: arguments)
-            arguments = parseResults.remaining
-            parameterValues[parameter.name] = parseResults.validated
+            do {
+                let parseResults = try parameter.validate(arguments: arguments)
+                arguments = parseResults.remaining
+                parameterValues[parameter.name] = parseResults.validated
+            } catch {
+                throw CommandError.invalidParametersForCommand(error, self, commandPath)
+            }
         }
         
-        return perform(options: optionValues, parameters: parameterValues)
+        return perform(options: optionValues, parameters: parameterValues, commandPath: commandPath)
     }
 
 }
