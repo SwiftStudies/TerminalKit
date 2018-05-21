@@ -38,7 +38,8 @@ extension Command {
         message.print(description)
         message.print()
         
-        message.print("Usage: \(path.joined(separator: " "))\(options.isEmpty ? " " : " [options] ")\(parameters.help)")
+        message.print("USAGE: \(path.joined(separator: " "))\(subCommands.isEmpty ? " " : " <sub-command> ")\(options.isEmpty ? " " : " [options] ")\(parameters.help)")
+        message.print()
         message.print()
         
         if !subCommands.isEmpty {
@@ -46,6 +47,7 @@ extension Command {
             for subcommand in subCommands {
                 message.print("\t\(subcommand.name)")
             }
+            message.print()
             message.print()
         }
         
