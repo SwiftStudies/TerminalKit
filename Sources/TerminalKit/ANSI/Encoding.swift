@@ -83,6 +83,14 @@ public extension String {
     public var bold : String {
         return ANSI.TextStyle.bold.applyTo(self)
     }
+    
+    public var italic : String {
+        return ANSI.TextStyle.italic.applyTo(self)
+    }
+    
+    public func style(_ style:ANSI.TextStyle)->String{
+        return style.applyTo(self)
+    }
 }
 
 

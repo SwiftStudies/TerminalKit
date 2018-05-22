@@ -10,16 +10,16 @@ public enum ExitCode {
     case failed(reason:String)
     case customFailure(code:Int, reason:String)
     
-    public func exit(){
+    public func end()->Never{
         switch self {
         case .success:
-            Darwin.exit(EXIT_SUCCESS)
+            exit(EXIT_SUCCESS)
         case .failed(let reason):
             print(reason)
-            Darwin.exit(EXIT_FAILURE)
+            exit(EXIT_FAILURE)
         case .customFailure(let code, let reason):
             print(reason)
-            Darwin.exit(Int32(code))
+            exit(Int32(code))
         }
     }
 }
@@ -74,7 +74,7 @@ public struct Tool {
         if !arguments.isEmpty {
             for command in commands {
                 if command.name == arguments[0] {
-                    try command.execute(arguments: [String](arguments.dropFirst()), commandPath: [name]).exit()
+                    try command.execute(arguments: [String](arguments.dropFirst()), commandPath: [name]).end()
                 }
             }
         }
@@ -84,7 +84,7 @@ public struct Tool {
             exit(EXIT_SUCCESS)
         }
         
-        try commands[0].execute(arguments: arguments, commandPath: [name]).exit()
+        try commands[0].execute(arguments: arguments, commandPath: [name]).end()
     }
     
     public func usage(for command:Command? = nil, with path:[String])->String{

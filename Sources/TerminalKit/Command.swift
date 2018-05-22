@@ -38,12 +38,12 @@ extension Command {
         message.print(description)
         message.print()
         
-        message.print("USAGE: \(path.joined(separator: " "))\(subCommands.isEmpty ? " " : " <sub-command> ")\(options.isEmpty ? " " : " [options] ")\(parameters.help)")
+        message.print("USAGE".style(.bold) + " \(path.joined(separator: " "))\(subCommands.isEmpty ? " " : " <sub-command> ")\(options.isEmpty ? " " : " [options] ")\(parameters.help)")
         message.print()
         message.print()
         
         if !subCommands.isEmpty {
-            message.print("Subcommands")
+            message.print("Subcommands".style(.underline))
             for subcommand in subCommands {
                 message.print("\t\(subcommand.name)")
             }
@@ -52,7 +52,7 @@ extension Command {
         }
         
         if !options.isEmpty {
-            message.print("Options")
+            message.print("Options".style(.underline))
             for option in options {
                 message.print(option.help)
             }
@@ -79,7 +79,7 @@ extension Command {
         // Display help if it's requested
         if arguments.contains("--help"){
             print(usage(command: commandPath))
-            ExitCode.success.exit()
+            ExitCode.success.end()
         }
         
         // Otherwise start parsing
